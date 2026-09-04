@@ -33,13 +33,7 @@
 .eyebrow { color: var(--color-text-muted); font-size: var(--text-xs); letter-spacing: var(--tracking-normal); text-transform: uppercase; }
 .nav { display: flex; gap: var(--space-5); }
 .nav a { padding: var(--space-3) var(--space-4); border-radius: var(--radius-full); }
-.nav a:hover,
-.nav a:focus-visible,
-.brand:focus-visible,
-button:hover,
-button:focus-visible,
-input:focus-visible,
-textarea:focus-visible { outline: var(--border-width) solid var(--color-primary); outline-offset: var(--space-1); }
+.nav a:hover, .nav a:focus-visible, .brand:focus-visible, button:hover, button:focus-visible, input:focus-visible, textarea:focus-visible { outline: var(--border-width) solid var(--color-primary); outline-offset: var(--space-1); }
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
