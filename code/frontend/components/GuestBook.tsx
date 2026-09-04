@@ -7,7 +7,14 @@ import styles from './GuestBook.module.css';
 
 type Entry = (typeof guestBookMock.entries)[number];
 
-const emptyForm = { name: '', note: '' };
+function formatDate(value: string) {
+  return new Date(value).toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
 
 export default function GuestBookPage() {
   const [entries, setEntries] = useState<Entry[]>(guestBookMock.entries);
