@@ -133,7 +133,16 @@
 .field { display: grid; gap: var(--space-2); margin-top: var(--space-4); }
 .field span { font-weight: var(--font-weight-medium); }
 .field input,
-.field textarea { width: 100%; padding: var(--space-4); border: var(--border-width) solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-text); }
+.field textarea {
+  width: 100%;
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+.textInput {}
+.textArea {}
 .field textarea { min-height: calc(var(--space-16) * 2); resize: vertical; }
 .actions { align-items: center; margin-top: var(--space-4); }
 .primary { padding: var(--space-3) var(--space-5); border: 0; border-radius: var(--radius-full); background: var(--color-primary); color: var(--color-primary-text); box-shadow: var(--shadow-sm); }
