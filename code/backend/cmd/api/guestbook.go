@@ -89,7 +89,7 @@ func writeAPIError(w http.ResponseWriter, r *http.Request, status int, code stri
 		"error": map[string]any{
 			"code":    code,
 			"message": message,
-		}
+		},
 	}
 	if details != nil {
 		payload["error"].(map[string]any)["details"] = details
