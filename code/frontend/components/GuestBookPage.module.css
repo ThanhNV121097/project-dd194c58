@@ -82,7 +82,7 @@
 .count,
 .notice { color: var(--color-text-muted); }
 .scribble { position: absolute; right: var(--space-4); bottom: var(--space-4); width: calc(var(--space-16) * 2); height: calc(var(--space-16) * 2); color: var(--color-primary); opacity: 0.2; }
-.section { display: grid; grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); gap: var(--space-6); align-items: start; }
+.section { display: grid; grid-template-columns: repeat(auto-fit, minmax(calc(var(--space-16) * 4 + var(--space-2)), 1fr)); gap: var(--space-6); align-items: start; }
 .form,
 .entries { padding: var(--space-8); }
 .form h2,
