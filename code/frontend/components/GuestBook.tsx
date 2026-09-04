@@ -24,6 +24,7 @@ export default function GuestBookPage() {
   const [form, setForm] = useState(emptyForm);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const newestLabel = entries[0] ? `Newest entry: ${entries[0].name}` : 'No entries yet.';
 
   function resetMessage() {
     setMessage(null);
