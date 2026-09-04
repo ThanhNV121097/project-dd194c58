@@ -99,7 +99,7 @@ Implementation note: this ERD chooses `bigint` identity instead of UUID because 
 
 ## 9. Story extension — Build guest book page
 
-The reviewed UI mock module `code/frontend/lib/mock/build-guest-book-page.ts` uses this entry shape: `id`, `name`, `note`, `created_at`, plus page-level `count`, `apiUnavailableMessage`, and optional `showApiUnavailable`. Existing `guestbook_entries` columns supply every persisted entry field the page needs. `count` is derived with `COUNT(*)`; failure-message fields are frontend state, not database state.
+The reviewed UI mock module `code/frontend/lib/mock/build-guest-book-page.ts` uses this entry shape: numeric `id`, `name`, `note`, `created_at`, plus page-level `count`, `apiUnavailableMessage`, and optional `showApiUnavailable`. Existing `guestbook_entries` columns supply every persisted entry field the page needs. `count` is derived with `COUNT(*)`; failure-message fields are frontend state, not database state. The numeric mock `id` conflicts with the project service contract that IDs are strings on the wire; keep wire IDs as strings and convert/type the later API wiring against string IDs because the cross-cutting API contract is already merged.
 
 No new entity, column, foreign key, constraint, or index is required for this story. The existing `idx_guestbook_entries_created_at_id` index remains the serving index for newest-first cards.
 
