@@ -102,7 +102,7 @@ export default function GuestBookPage() {
               <article key={entry.id} className={styles.entry}>
                 <div className={styles.entryTop}>
                   <div className={styles.name}>{entry.name}</div>
-                  <div className={styles.date}>{new Date(entry.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</div>
+                  <div className={styles.date}>{formatDate(entry.created_at)}</div>
                 </div>
                 <p className={styles.note}>{entry.note}</p>
               </article>
