@@ -93,10 +93,10 @@
 .notice {
   margin-top: var(--space-5);
   padding: var(--space-4) var(--space-5);
-  border: var(--border-width) solid #D8CCB4;
+  border: var(--border-width) solid var(--color-warning);
   border-radius: var(--radius-md);
-  background: #FFFAF0;
-  color: #6A5220;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
 .layout {
@@ -129,7 +129,7 @@
 .field input,
 .field textarea {
   width: 100%;
-  padding: 14px 15px;
+  padding: var(--space-4) var(--space-4);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-sm);
   background: var(--color-surface);
@@ -137,7 +137,7 @@
 }
 
 .field textarea {
-  min-height: 124px;
+  min-height: 31 * var(--space-4);
   resize: vertical;
 }
 
@@ -147,7 +147,7 @@
 }
 
 .primary {
-  padding: 13px 18px;
+  padding: var(--space-3) var(--space-5);
   border: 0;
   border-radius: var(--radius-full);
   background: var(--color-primary);
