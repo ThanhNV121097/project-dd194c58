@@ -118,7 +118,7 @@
 .field textarea:focus-visible,
 .primary:hover,
 .primary:focus-visible {
-  outline: 3px solid var(--color-focus);
+  outline: var(--border-width) solid var(--color-focus);
   outline-offset: 2px;
 }
 
