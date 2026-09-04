@@ -1,5 +1,5 @@
 export type GuestBookEntry = {
-  id: number;
+  id: string;
   name: string;
   note: string;
   created_at: string;
@@ -20,8 +20,21 @@ type GuestBookState = {
 };
 
 const store: GuestBookState = {
-  entries: [],
-  nextId: 1,
+  entries: [
+    {
+      id: "2",
+      name: "Mina",
+      note: "Lovely little shop. The front desk feels like a handwritten postcard.",
+      created_at: "2026-09-04T14:14:00Z",
+    },
+    {
+      id: "1",
+      name: "Jon",
+      note: "Stopped for a coffee and stayed for the quiet. Nice place to pause.",
+      created_at: "2026-09-04T13:02:00Z",
+    },
+  ],
+  nextId: 3,
 };
 
 function normalize(value: string) {
@@ -29,7 +42,7 @@ function normalize(value: string) {
 }
 
 export async function fetchEntries() {
-  return [...store.entries].sort((a, b) => b.id - a.id);
+  return [...store.entries];
 }
 
 export async function fetchEntryCount(): Promise<CountResponse> {
@@ -45,13 +58,13 @@ export async function createEntry(input: NewEntry) {
   }
 
   const entry: GuestBookEntry = {
-    id: store.nextId,
+    id: String(store.nextId),
     name,
     note,
     created_at: new Date().toISOString(),
   };
 
   store.nextId += 1;
-  store.entries.unshift(entry);
+  store.entries = [entry, ...store.entries];
   return entry;
 }
