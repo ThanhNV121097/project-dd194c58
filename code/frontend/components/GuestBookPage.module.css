@@ -1,7 +1,7 @@
 .page {
   min-height: 100vh;
   padding: var(--space-12) var(--space-5) var(--space-16);
-  background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-surface) 100%);
+  background: var(--color-bg);
 }
 
 .shell {
@@ -70,7 +70,7 @@
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+  grid-template-columns: 1fr;
   gap: var(--space-6);
   align-items: start;
 }
@@ -108,7 +108,7 @@
 .field input,
 .field textarea {
   width: 100%;
-  padding: var(--space-4) var(--space-4);
+  padding: var(--space-4);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-sm);
   background: var(--color-surface);
@@ -127,24 +127,23 @@
 }
 
 .primary {
-  padding: calc(var(--space-3) + var(--space-1)) var(--space-4);
+  padding: var(--space-3) var(--space-4);
   border: 0;
   border-radius: var(--radius-full);
   background: var(--color-primary);
   color: var(--color-primary-text);
   box-shadow: var(--shadow-sm);
   cursor: pointer;
-  transition: transform var(--duration-fast) var(--easing), background var(--duration-fast) var(--easing);
+  transition: transform var(--duration-fast) var(--easing);
 }
 
 .primary:hover {
   transform: translateY(calc(var(--space-1) * -1));
-  background: var(--color-primary);
 }
 
 .banner {
   margin: var(--space-4) 0 0;
-  padding: var(--space-4) var(--space-4);
+  padding: var(--space-4);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface);
@@ -157,7 +156,7 @@
 }
 
 .card {
-  padding: var(--space-4) var(--space-4) var(--space-4);
+  padding: var(--space-4);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
@@ -201,12 +200,13 @@
   font-size: var(--text-sm);
 }
 
-@media (max-width: 860px) {
+@media (min-width: 861px) {
   .layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 
   .title {
     max-width: none;
   }
 }
+
