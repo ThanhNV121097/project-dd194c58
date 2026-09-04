@@ -47,10 +47,10 @@
 .navLink:hover,
 .navLink:focus-visible,
 .brand:focus-visible,
-button:hover,
-button:focus-visible,
-input:focus-visible,
-textarea:focus-visible {
+.primary:hover,
+.primary:focus-visible,
+.textInput:focus-visible,
+.textArea:focus-visible {
   outline: var(--border-width) solid var(--color-primary);
   outline-offset: var(--space-1);
   box-shadow: 0 0 0 var(--space-1) var(--color-focus);
