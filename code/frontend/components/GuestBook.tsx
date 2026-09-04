@@ -23,7 +23,10 @@ export default function GuestBookPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const newestLabel = count === 1 ? 'Visitor so far' : 'Visitors so far';
+  function resetMessage() {
+    setMessage(null);
+    setError(null);
+  }
 
   function submitForm(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
