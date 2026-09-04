@@ -44,20 +44,24 @@ func main() {
 	}
 
 	a := app{db: db}
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /healthz", a.healthz)
-	mux.HandleFunc("GET /health", a.health)
+	if err := a.serve(); err != nil {
+		log.Fatal(err)
+	}
+}
 
+func (a app) serve() error {
 	server := &http.Server{
 		Addr:              ":" + port(),
-		Handler:           mux,
+		Handler:           a.routes(),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 	log.Printf("listening on %s", server.Addr)
 	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		log.Fatal(err)
+		return err
 	}
+	return nil
 }
+
 
 func port() string {
 	if value := os.Getenv("PORT"); value != "" {
