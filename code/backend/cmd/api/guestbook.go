@@ -191,7 +191,7 @@ func (a app) createEntry(w http.ResponseWriter, r *http.Request) {
 }
 
 func writeDBError(w http.ResponseWriter, err error, requestID string) {
-	if errors.Is(err, context.DeadlineExceeded) || errors.Is(err, sql.ErrConnDone) {
+	if errors.Is(err, sql.ErrConnDone) {
 		writeAPIError(w, http.StatusServiceUnavailable, "UNAVAILABLE", "Service unavailable.", nil, requestID)
 		return
 	}
