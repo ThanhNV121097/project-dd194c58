@@ -102,12 +102,7 @@
 .notice { margin-top: var(--space-5); padding: var(--space-4) var(--space-5); border: var(--border-width) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-raised); }
 .stack { display: grid; gap: var(--space-5); }
 .mini { flex: 1 1 calc(var(--space-16) * 2 + var(--space-2)); padding: var(--space-5); }
-@media (max-width: 860px) {
-  .header,
-  .hero,
-  .section {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: calc(var(--space-16) * 13 + var(--space-6))) {
   .header { display: grid; }
   .nav { flex-wrap: wrap; }
   .hero h1 { max-width: none; }
