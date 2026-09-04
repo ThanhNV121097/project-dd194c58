@@ -4,16 +4,16 @@ import { FormEvent, useMemo, useState } from "react";
 import styles from "./GuestBookPage.module.css";
 
 type Entry = {
-  id: number;
-  name: string;
-  note: string;
-  created_at: string;
+  readonly id: number;
+  readonly name: string;
+  readonly note: string;
+  readonly created_at: string;
 };
 
 type GuestBookPageData = {
-  count: number;
-  entries: Entry[];
-  apiUnavailableMessage: string;
+  readonly count: number;
+  readonly entries: readonly Entry[];
+  readonly apiUnavailableMessage: string;
 };
 
 type GuestBookPageProps = {
