@@ -6,7 +6,7 @@ import {
   fetchEntries,
   fetchEntryCount,
   type GuestBookEntry,
-} from "../lib/mock/connect-page-to-api";
+} from "../lib/guestbook-api";
 import styles from "./GuestBookPage.module.css";
 
 type LoadState = "loading" | "ready" | "error";
