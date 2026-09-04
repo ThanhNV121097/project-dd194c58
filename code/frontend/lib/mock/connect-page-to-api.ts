@@ -14,22 +14,26 @@ type CountResponse = {
   count: number;
 };
 
-const store: GuestBookEntry[] = [
-  { id: 3, name: "Mina", note: "Lovely little shop. The front desk feels like a handwritten postcard.", created_at: "2025-08-14T14:14:00Z" },
-  { id: 2, name: "Jon", note: "Stopped for a coffee and stayed for the quiet. Nice place to pause.", created_at: "2025-08-14T13:02:00Z" },
-  { id: 1, name: "Priya", note: "Warm, calm, and welcoming. The guest book matches the room.", created_at: "2025-08-13T18:40:00Z" },
-];
+type GuestBookState = {
+  entries: GuestBookEntry[];
+  nextId: number;
+};
+
+const store: GuestBookState = {
+  entries: [],
+  nextId: 1,
+};
 
 function normalize(value: string) {
   return value.trim();
 }
 
 export async function fetchEntries() {
-  return [...store].sort((a, b) => b.id - a.id);
+  return [...store.entries].sort((a, b) => b.id - a.id);
 }
 
 export async function fetchEntryCount(): Promise<CountResponse> {
-  return { count: store.length };
+  return { count: store.entries.length };
 }
 
 export async function createEntry(input: NewEntry) {
@@ -41,12 +45,13 @@ export async function createEntry(input: NewEntry) {
   }
 
   const entry: GuestBookEntry = {
-    id: store.length ? Math.max(...store.map((item) => item.id)) + 1 : 1,
+    id: store.nextId,
     name,
     note,
     created_at: new Date().toISOString(),
   };
 
-  store.unshift(entry);
+  store.nextId += 1;
+  store.entries.unshift(entry);
   return entry;
 }
