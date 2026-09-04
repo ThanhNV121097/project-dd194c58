@@ -97,5 +97,4 @@ func writeAPIError(w http.ResponseWriter, r *http.Request, status int, code stri
 	writeJSON(w, status, payload)
 }
 
-var _ = errors.New
-var _ = sql.ErrNoRows
+
