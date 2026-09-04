@@ -124,20 +124,22 @@ Behaviour:
 
 Behaviour:
 
-1. Visitor submits valid name and note through the page form.
-2. Page sends the entry to the API and waits for the saved record.
-3. Page updates entry list so new entry appears at the top without manual reload.
-4. Page keeps visitor count visible after submit.
-5. Page shows friendly failure message when API cannot be reached.
+1. Visitor opens page and all visible content is loaded from the API, not hard-coded in the page.
+2. Visitor submits valid name and note through the page form.
+3. Page sends the entry to the API and waits for the saved record.
+4. Page updates entry list so new entry appears at the top without manual reload.
+5. Page keeps visitor count visible and in sync with API data after submit and after reload.
+6. Page shows friendly failure message when API cannot be reached.
 
 **Acceptance criteria** — each maps one-to-one onto a test case in `docs/guestbook/test-cases/connect-page-to-api.md`.
 
 | # | Given | When | Then |
 |---|---|---|---|
-| AC-1 | page is connected to API | visitor submits valid form | entry appears at top of list without reload |
-| AC-2 | page is connected to API | visitor submits valid form | visible count remains on page after update |
-| AC-3 | API cannot be reached | visitor submits form or page loads data | friendly failure message appears |
-| AC-4 | page reloads after a saved entry exists | visitor opens page again | saved entry still appears because it came from the database |
+| AC-1 | page is connected to API | visitor loads page | every visible item comes from API responses |
+| AC-2 | page is connected to API | visitor submits valid form | entry appears at top of list without reload |
+| AC-3 | page is connected to API | visitor submits valid form | visible count stays synced with API count |
+| AC-4 | API cannot be reached | visitor submits form or page loads data | friendly failure message appears |
+| AC-5 | page reloads after a saved entry exists | visitor opens page again | saved entry still appears because it came from the database |
 
 **Failure, boundary and permission behaviour**
 
