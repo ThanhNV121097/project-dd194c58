@@ -113,7 +113,30 @@ No new entity, column, foreign key, constraint, or index is required for this st
 
 **Migration plan** — forward: apply the existing initial schema migration that creates `guestbook_entries`, constraints, and `idx_guestbook_entries_created_at_id`; no additional migration for this story. Backward: use the existing initial down migration only in non-production or with backup/approval because it drops stored entries; no story-specific rollback exists. Safe on populated table: yes for this story because it adds no schema change; dropping the initial table is destructive on populated databases.
 
-## 11. Open questions
+## 11. Story extension — Connect page to API
+
+The reviewed UI API client contract from `code/frontend/lib/guestbook-api.ts` uses this live API-facing entry shape:
+
+```ts
+type GuestBookEntry = {
+  id: string;
+  name: string;
+  note: string;
+  created_at: string;
+};
+
+type EntriesResponse = { data: GuestBookEntry[] };
+type CountResponse = { count: number };
+type HealthResponse = { status: "ok" };
+```
+
+Existing `guestbook_entries` columns supply every persisted entry field the connected page needs. `count` is derived with `COUNT(*)`; API reachability and friendly failure text are frontend state, not database state.
+
+No new entity, column, foreign key, constraint, or index is required for this story. Existing `guestbook_entries` stores the signed entry resource, and `idx_guestbook_entries_created_at_id` serves `GET /v1/entries` newest-first ordering used by the connected page after load, submit, and reload.
+
+**Migration plan** — forward: no schema migration for this story beyond existing initial schema. Backward: no rollback action. Safe on populated table: yes, because this story adds no database change.
+
+## 12. Open questions
 
 None.
 

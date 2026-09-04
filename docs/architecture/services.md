@@ -435,7 +435,50 @@ No new endpoint beyond existing sections 3.1 through 3.4 is needed. Backend impl
 
 Forward: implement existing `/v1` service contracts and run the existing initial database migration for `guestbook_entries`; no endpoint or response migration is required. Backward: remove these backend handlers only if story is reverted, and use initial down migration only with backup/approval because it deletes saved entries. Safe on populated table: handler deployment is safe; initial down migration is destructive on populated databases and must not run as routine rollback.
 
-## 12. Open questions
+## 12. Story extension — Connect page to API
+
+Reviewed live UI client contract from `code/frontend/lib/guestbook-api.ts`:
+
+```ts
+type GuestBookEntry = {
+  id: string;
+  name: string;
+  note: string;
+  created_at: string;
+};
+
+type CountResponse = { count: number };
+type EntriesResponse = { data: GuestBookEntry[] };
+type HealthResponse = { status: "ok" };
+```
+
+### 12.1 Contract alignment
+
+- `fetchHealth()` calls unversioned `GET /health` and expects `{ "status": "ok" }`.
+- `fetchEntries()` calls `GET /v1/entries` and expects response `{ "data": GuestBookEntry[] }` with string `id`, `name`, `note`, and RFC 3339 `created_at`, newest first.
+- `fetchEntryCount()` calls `GET /v1/entries/count` and expects `{ "count": number }`.
+- `createEntry({ name, note })` calls `POST /v1/entries` with JSON `{ "name": string, "note": string }` and expects one saved `GuestBookEntry`.
+- The UI client currently sends field values as provided by `GuestBookPage`; backend remains responsible for Unicode trimming and validation per section 2.5. Frontend may trim before sending, but API cannot depend on it.
+- Friendly API-unavailable copy is frontend presentation state. Backend uses the existing error envelope and returns `UNAVAILABLE` or other catalogued errors; frontend maps fetch failure or non-2xx response to its friendly message.
+
+### 12.2 Endpoints used by this story
+
+No new endpoint is needed. Existing contracts in sections 3.1 through 3.4 cover the connected page:
+
+| Page need | Endpoint | Auth | Success | Errors |
+|---|---|---|---|---|
+| Health probe | `GET /health` | public | `200 { "status": "ok" }` | `UNAVAILABLE` |
+| Load entry cards newest first | `GET /v1/entries` | public | `200 { "data": GuestBookEntry[] }` | `RATE_LIMITED`, `INTERNAL`, `UNAVAILABLE` |
+| Load visible visitor count | `GET /v1/entries/count` | public | `200 { "count": number }` | `RATE_LIMITED`, `INTERNAL`, `UNAVAILABLE` |
+| Sign book from form | `POST /v1/entries` | public | `201 GuestBookEntry` with `Location: /v1/entries/{id}` | `BAD_REQUEST`, `VALIDATION_FAILED`, `RATE_LIMITED`, `INTERNAL`, `UNAVAILABLE` |
+
+Existing error contract in section 2.3 remains authoritative. No alternate plain-string error format is added for this story.
+
+### 12.3 Migration plan
+
+Forward: deploy frontend API wiring against existing backend service contracts; run existing initial database migration for `guestbook_entries` before backend starts if not already applied. No new endpoint, response, or schema migration is required for this story. Backward: revert frontend API wiring to previous story state only if product rolls back this story; no database rollback needed. Dropping the initial table remains destructive on populated databases and must not be used as routine rollback. Safe on populated table: yes, this story adds no schema change and only reads/writes through existing endpoints.
+
+## 13. Open questions
 
 None.
 
