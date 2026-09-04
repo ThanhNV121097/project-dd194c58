@@ -59,10 +59,11 @@ export default function GuestBookPage() {
         if (!active) return;
         setEntries(entriesBody.data);
         setCount(countBody.count);
-        setReady(true);
       } catch {
         if (!active) return;
         setBanner("API unavailable. Please try again later.");
+      } finally {
+        if (!active) return;
         setReady(true);
       }
     }
@@ -90,7 +91,7 @@ export default function GuestBookPage() {
         setBanner(message);
         return;
       }
-      const next = (await readJSON<Entry>(response));
+      const next = await readJSON<Entry>(response);
       setEntries((current) => [next, ...current]);
       setCount((value) => value + 1);
       setForm(emptyForm);
