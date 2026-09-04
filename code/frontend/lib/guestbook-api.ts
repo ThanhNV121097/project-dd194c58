@@ -22,7 +22,7 @@ type HealthResponse = {
   status: "ok";
 };
 
-const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "/api";
+const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? "/api").replace(/\/$/, "");
 const versionedBase = `${apiBase}/v1`;
 
 function buildUrl(path: string) {
