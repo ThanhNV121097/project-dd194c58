@@ -86,9 +86,15 @@ export default function GuestBookPage() {
           </span>
         </a>
         <nav className={styles.nav} aria-label="Primary">
-          <a href="#sign">Sign</a>
-          <a href="#entries">Entries</a>
-          <a href="#visit-count">Count</a>
+          <a className={styles.navLink} href="#sign">
+            Sign
+          </a>
+          <a className={styles.navLink} href="#entries">
+            Entries
+          </a>
+          <a className={styles.navLink} href="#visit-count">
+            Count
+          </a>
         </nav>
       </header>
 
@@ -172,7 +178,11 @@ export default function GuestBookPage() {
             </button>
             <span className={styles.count}>Count stays visible while posting.</span>
           </div>
-          {message ? <p className={styles.notice} role="alert">{message}</p> : null}
+          {message ? (
+            <p className={styles.notice} role="alert">
+              {message}
+            </p>
+          ) : null}
         </form>
 
         <div className={styles.stack}>
