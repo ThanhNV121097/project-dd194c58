@@ -94,7 +94,7 @@ export default function GuestBookPage({ data }: GuestBookPageProps) {
             Visitors leave a name and a short note. Everyone can read what came before. New entries fade in quietly.
           </p>
           <ul className={styles.stats} aria-label="Visitor stats">
-            <li className={styles.stat} id="visit-count">
+            <li className={styles.stat}>
               <strong>{count}</strong>
               <span>Visitors so far</span>
             </li>
