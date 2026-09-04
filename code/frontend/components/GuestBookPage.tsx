@@ -74,7 +74,7 @@ export default function GuestBookPage({ data }: GuestBookPageProps) {
     return (
       <main className={styles.page}>
         <section className={styles.notice} role="alert">
-          <h1 className={styles.title}>Guest Book</h1>
+          <h1 className={styles.noticeTitle}>Guest Book</h1>
           <p className={styles.noticeMessage}>{data.apiUnavailableMessage ?? apiUnavailableMessage}</p>
         </section>
       </main>
@@ -88,9 +88,8 @@ export default function GuestBookPage({ data }: GuestBookPageProps) {
           <p className={styles.eyebrow}>Shop door guest book</p>
           <h1 id="guest-book-title" className={styles.title}>A little welcome on every visit.</h1>
           <p className={styles.intro}>Visitors leave a name and a short note. Everyone can read what came before. New entries fade in quietly.</p>
-          <ul className={styles.stats} aria-label="Visitor stats">
+          <ul className={styles.stats} aria-label="Visitor count">
             <li className={styles.stat}><strong>{count}</strong><span>Visitors so far</span></li>
-            <li className={styles.stat}><strong>{newestEntries.length}</strong><span>Recent notes</span></li>
           </ul>
         </header>
         <section className={styles.layout}>
