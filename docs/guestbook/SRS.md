@@ -29,6 +29,7 @@ Guest Book lets any visitor leave a name and short note, then read earlier notes
 
 - Accounts, login, moderation, and payments — deliberately not built for this product.
 - Admin controls, deletions, and editing — deliberately not built for this product.
+- Mock-only "Simulate API issue" control — appears in approved design as test-only UI, but stakeholder said it must not ship.
 - Design changes beyond the approved mockup — belongs to the design process, not this SRS.
 
 ## 4. Functional requirements
