@@ -393,7 +393,49 @@ Existing error contract in section 2.3 remains authoritative. API-unavailable UI
 
 Forward: no service endpoint migration for this story; backend API story implements existing endpoints. Backward: no rollback action. Safe on populated table: yes, no data or schema changes.
 
-## 11. Open questions
+## 11. Story extension — Build guest book API
+
+Reviewed UI mock contract from `code/frontend/lib/mock/build-guest-book-api.ts`:
+
+```ts
+type GuestBookEntry = {
+  id: string;
+  name: string;
+  note: string;
+  created_at: string;
+};
+
+const mockGuestBook: {
+  count: number;
+  entries: GuestBookEntry[];
+  createEntry(name: string, note: string): GuestBookEntry | string;
+};
+```
+
+### 11.1 Contract alignment
+
+- `GET /v1/entries` supplies `mockGuestBook.entries` through response `data[]` with string `id`, `name`, `note`, and `created_at`, newest first.
+- `GET /v1/entries/count` supplies `mockGuestBook.count` through response `{ "count": number }`.
+- `POST /v1/entries` replaces `mockGuestBook.createEntry(name, note)` with persisted creation and returns one saved `GuestBookEntry`.
+- Mock validation returns plain strings like `Name is required.`; real API must use project error envelope from section 2.3 because consumers already have one closed error catalog. Frontend wiring should map `VALIDATION_FAILED` details to user-friendly text.
+- Mock dates include display strings like `Today · just now`; real API returns RFC 3339 UTC `created_at` per cross-cutting timestamp contract. Frontend formats dates for display.
+
+### 11.2 Endpoints implemented by this story
+
+No new endpoint beyond existing sections 3.1 through 3.4 is needed. Backend implementation must expose:
+
+| Story need | Endpoint | Auth | Success | Errors |
+|---|---|---|---|---|
+| Health check | `GET /health` | public | `200 { "status": "ok" }` | `UNAVAILABLE` |
+| Store trimmed entry | `POST /v1/entries` | public | `201 GuestBookEntry` with `Location: /v1/entries/{id}` | `BAD_REQUEST`, `VALIDATION_FAILED`, `RATE_LIMITED`, `INTERNAL`, `UNAVAILABLE` |
+| List entries newest first | `GET /v1/entries` | public | `200 { "data": GuestBookEntry[] }` | `RATE_LIMITED`, `INTERNAL`, `UNAVAILABLE` |
+| Count entries | `GET /v1/entries/count` | public | `200 { "count": number }` | `RATE_LIMITED`, `INTERNAL`, `UNAVAILABLE` |
+
+### 11.3 Migration plan
+
+Forward: implement existing `/v1` service contracts and run the existing initial database migration for `guestbook_entries`; no endpoint or response migration is required. Backward: remove these backend handlers only if story is reverted, and use initial down migration only with backup/approval because it deletes saved entries. Safe on populated table: handler deployment is safe; initial down migration is destructive on populated databases and must not run as routine rollback.
+
+## 12. Open questions
 
 None.
 

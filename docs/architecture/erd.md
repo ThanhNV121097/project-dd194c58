@@ -105,7 +105,15 @@ No new entity, column, foreign key, constraint, or index is required for this st
 
 **Migration plan** — forward: no schema migration for this story beyond existing initial schema. Backward: no rollback action. Safe on populated table: yes, because this story adds no database change.
 
-## 10. Open questions
+## 10. Story extension — Build guest book API
+
+The reviewed UI mock module `code/frontend/lib/mock/build-guest-book-api.ts` uses this API-facing entry shape: `id`, `name`, `note`, `created_at`; the page state also keeps `count` and client-side validation/friendly banner text. Existing `guestbook_entries` columns supply every persisted entry field the API returns. `count` is derived with `COUNT(*)`; validation banner strings are frontend state, not database state.
+
+No new entity, column, foreign key, constraint, or index is required for this story. The existing `guestbook_entries` table already stores the API entry resource, and `idx_guestbook_entries_created_at_id` serves `GET /v1/entries` newest-first ordering with deterministic ties.
+
+**Migration plan** — forward: apply the existing initial schema migration that creates `guestbook_entries`, constraints, and `idx_guestbook_entries_created_at_id`; no additional migration for this story. Backward: use the existing initial down migration only in non-production or with backup/approval because it drops stored entries; no story-specific rollback exists. Safe on populated table: yes for this story because it adds no schema change; dropping the initial table is destructive on populated databases.
+
+## 11. Open questions
 
 None.
 
