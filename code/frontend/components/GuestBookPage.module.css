@@ -1,5 +1,5 @@
 .page {
-  min-height: 100vh;
+  min-height: calc(var(--space-16) * 15);
   padding: var(--space-12) var(--space-5) var(--space-16);
   background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-surface) 100%);
 }
@@ -12,7 +12,6 @@
 .hero {
   display: grid;
   gap: var(--space-4);
-  max-width: calc(var(--space-16) * 9 + var(--space-14));
   margin-bottom: var(--space-10);
 }
 
@@ -26,7 +25,6 @@
 }
 
 .title {
-  max-width: 10ch;
   color: var(--color-primary);
   font-size: var(--text-3xl);
 }
@@ -70,7 +68,7 @@
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+  grid-template-columns: 1fr;
   gap: var(--space-6);
   align-items: start;
 }
@@ -199,14 +197,4 @@
   margin: 0;
   color: var(--color-text);
   font-size: var(--text-sm);
-}
-
-@media (max-width: 860px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
-
-  .title {
-    max-width: none;
-  }
 }
