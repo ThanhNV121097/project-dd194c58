@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Guest Book</title>
+  <style>
+    :root{
+      --paper:#F7F3EA;
+      --green:#24533D;
+      --text:#1F2933;
+      --muted:#6B7280;
+      --line:#E7DDCF;
+      --accent:#C9B38C;
+      --card:#FFFDF8;
+      --shadow:0 10px 30px rgba(31,41,51,.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(180deg,#fbf7ef 0%,var(--paper) 100%);color:var(--text)}
+    h1,h2{font-family:Georgia,"Times New Roman",serif;line-height:1.1;margin:0}
+    a,button,input,textarea{font:inherit}
+    .wrap{max-width:1100px;margin:0 auto;padding:28px 18px 64px}
+    header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:10px 0 26px}
+    .brand{display:flex;align-items:center;gap:12px;color:var(--green);text-decoration:none}
+    .brand-mark{width:44px;height:44px;border-radius:14px;background:var(--green);display:grid;place-items:center;box-shadow:var(--shadow)}
+    .brand-mark svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2}
+    .eyebrow{font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+    nav a{color:var(--text);text-decoration:none;margin-left:18px;padding:10px 12px;border-radius:999px}
+    nav a:hover,nav a:focus-visible,button:hover,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid rgba(36,83,61,.22);outline-offset:2px}
+    .hero{padding:32px 0 18px;display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center}
+    .hero h1{font-size:clamp(2.5rem,6vw,4.8rem);color:var(--green);max-width:10ch}
+    .hero p{font-size:1.06rem;line-height:1.7;color:var(--muted);max-width:58ch}
+    .stat-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px}
+    .stat{background:rgba(255,253,248,.86);border:1px solid var(--line);border-radius:999px;padding:12px 16px;box-shadow:var(--shadow)}
+    .stat strong{display:block;font-size:1.25rem;color:var(--green)}
+    .panel{background:rgba(255,253,248,.92);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .hero-art{padding:22px}
+    .paper{background:linear-gradient(180deg,#fff 0%,#f9f3e7 100%);border:1px solid var(--line);border-radius:28px;padding:22px;min-height:320px;position:relative;overflow:hidden}
+    .paper:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(180deg,rgba(36,83,61,.03) 0 1px,transparent 1px 36px);pointer-events:none}
+    .scribble{position:absolute;inset:auto 18px 18px auto;width:120px;height:120px;opacity:.22}
+    .section{padding:20px 0 0}
+    .section h2{font-size:clamp(1.7rem,3vw,2.5rem);color:var(--green);margin-bottom:12px}
+    .layout{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:22px;align-items:start}
+    form{padding:22px}
+    label{display:block;font-weight:600;margin:0 0 8px}
+    .field{margin-bottom:16px}
+    input,textarea{width:100%;border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px 15px;color:var(--text)}
+    textarea{min-height:124px;resize:vertical}
+    .help{font-size:.92rem;color:var(--muted);margin-top:7px}
+    .actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:4px}
+    .primary{background:var(--green);color:#fff;border:none;border-radius:999px;padding:13px 18px;cursor:pointer;box-shadow:0 10px 20px rgba(36,83,61,.2);transition:transform .2s ease,background .2s ease}
+    .primary:hover{transform:translateY(-1px);background:#1f4634}
+    .ghost{background:transparent;border:1px solid var(--line);color:var(--text);border-radius:999px;padding:12px 16px}
+    .count-badge{margin-left:auto;font-size:.95rem;color:var(--green);font-weight:700}
+    .feed{display:grid;gap:14px}
+    .entry{padding:18px 18px 16px;background:var(--card);border:1px solid var(--line);border-radius:20px;animation:fadeIn .45s ease both}
+    .entry-top{display:flex;justify-content:space-between;gap:14px;align-items:baseline;margin-bottom:8px}
+    .name{font-weight:700;font-size:1.08rem;color:var(--green)}
+    .date{font-size:.92rem;color:var(--muted)}
+    .note{margin:0;line-height:1.65;font-size:1rem}
+    .notice{padding:16px 18px;border-radius:16px;border:1px solid #d8ccb4;background:#fffaf0;color:#6a5220}
+    .stack{display:grid;gap:18px}
+    .subtle{color:var(--muted)}
+    .state-card{padding:22px}
+    .status{display:inline-flex;gap:8px;align-items:center;color:var(--green);font-weight:700}
+    .dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
+    .row{display:flex;gap:18px;flex-wrap:wrap}
+    .mini{flex:1 1 180px;padding:18px;border:1px solid var(--line);border-radius:18px;background:#fffdf8}
+    .mini strong{display:block;font-size:1.7rem;color:var(--green);font-family:Georgia,serif}
+    footer{padding:42px 0 0;color:var(--muted);text-align:center}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    @media (max-width: 860px){.hero,.layout{grid-template-columns:1fr}nav{display:none}.hero h1{max-width:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="#top" aria-label="Guest Book home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M6 4h10l2 2v14H6z"></path><path d="M8 8h8M8 12h8M8 16h5"></path></svg>
+        </span>
+        <span>
+          <span class="eyebrow">Shop door guest book</span><br>
+          Guest Book
+        </span>
+      </a>
+      <nav aria-label="Primary">
+        <a href="#sign">Sign</a>
+        <a href="#entries">Entries</a>
+        <a href="#visit-count">Count</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero panel" aria-labelledby="hero-title">
+        <div>
+          <p class="eyebrow">Warm paper, deep green ink</p>
+          <h1 id="hero-title">A little welcome on every visit.</h1>
+          <p>Visitors leave a name and a short note. Everyone can read what came before. New entries fade in quietly, like fresh ink on a page.</p>
+          <div class="stat-row" id="visit-count">
+            <div class="stat"><strong>128</strong><span class="subtle">Visitors so far</span></div>
+            <div class="stat"><strong>12</strong><span class="subtle">Recent notes</span></div>
+            <div class="stat"><strong>Live</strong><span class="subtle">API-backed list</span></div>
+          </div>
+        </div>
+        <div class="hero-art">
+          <div class="paper" aria-hidden="true">
+            <div class="notice" style="max-width:240px;position:relative;z-index:1">“Thanks for stopping by.”<br><span class="subtle">Sample note card style</span></div>
+            <svg class="scribble" viewBox="0 0 200 200">
+              <path d="M20 120c28-44 58-64 80-60 32 6 52 48 80 42s16-56-10-60-54 34-76 54-36 44-70 42" fill="none" stroke="var(--green)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="section layout" id="sign" aria-labelledby="sign-title">
+        <form class="panel" onsubmit="event.preventDefault();document.getElementById('success').hidden=false;document.getElementById('error').hidden=true;this.reset();">
+          <h2 id="sign-title">Sign the book</h2>
+          <p class="subtle">Add your name and a short note. Trimmed input, clear validation, friendly errors.</p>
+          <div class="field">
+            <label for="name">Name</label>
+            <input id="name" name="name" maxlength="60" placeholder="Ada Lovelace" required>
+            <div class="help">1–60 characters after trimming.</div>
+          </div>
+          <div class="field">
+            <label for="note">Note</label>
+            <textarea id="note" name="note" maxlength="280" placeholder="Loved the tea and the calm corner by the window." required></textarea>
+            <div class="help">1–280 characters after trimming.</div>
+          </div>
+          <div class="actions">
+            <button class="primary" type="submit">Leave note</button>
+            <button class="ghost" type="button" onclick="document.getElementById('error').hidden=false;document.getElementById('success').hidden=true;">Simulate API issue</button>
+            <span class="count-badge">Count stays visible while posting</span>
+          </div>
+          <div id="success" class="notice" hidden style="margin-top:18px">Thanks. Entry appears at top of list with no reload.</div>
+          <div id="error" class="notice" hidden style="margin-top:18px">Could not reach API. Try again in a moment.</div>
+        </form>
+
+        <div class="stack">
+          <section class="panel state-card" id="entries" aria-labelledby="entries-title">
+            <h2 id="entries-title">Latest notes</h2>
+            <div class="feed" aria-live="polite">
+              <article class="entry">
+                <div class="entry-top"><div class="name">Mina</div><div class="date">Today · 2:14 PM</div></div>
+                <p class="note">Lovely little shop. The front desk feels like a handwritten postcard.</p>
+              </article>
+              <article class="entry">
+                <div class="entry-top"><div class="name">Jon</div><div class="date">Today · 1:02 PM</div></div>
+                <p class="note">Stopped for a coffee and stayed for the quiet. Nice place to pause.</p>
+              </article>
+              <article class="entry">
+                <div class="entry-top"><div class="name">Priya</div><div class="date">Yesterday · 6:40 PM</div></div>
+                <p class="note">Warm, calm, and welcoming. The guest book matches the room.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel state-card" aria-labelledby="api-title">
+            <h2 id="api-title">API state</h2>
+            <div class="row">
+              <div class="mini"><strong>OK</strong><span class="subtle">GET /health responds</span></div>
+              <div class="mini"><strong>DB</strong><span class="subtle">Entries survive restart</span></div>
+            </div>
+            <p class="subtle" style="margin:16px 0 0">All content on screen comes from the API in the finished app. This mock shows the same layout and states.</p>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer>Centered column. Soft paper. New entries fade in.</footer>
+  </div>
+</body>
+</html>
