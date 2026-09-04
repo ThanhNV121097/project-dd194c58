@@ -10,10 +10,12 @@ import (
 	"io"
 	"io/fs"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -38,10 +40,10 @@ type apiError struct {
 }
 
 type apiErrorBody struct {
-	Code      string       `json:"code"`
-	Message   string       `json:"message"`
+	Code      string        `json:"code"`
+	Message   string        `json:"message"`
 	Details   []errorDetail `json:"details,omitempty"`
-	RequestID string       `json:"request_id"`
+	RequestID string        `json:"request_id"`
 }
 
 type errorDetail struct {
@@ -53,6 +55,19 @@ type errorDetail struct {
 type entryInput struct {
 	Name string `json:"name"`
 	Note string `json:"note"`
+}
+
+type requestContextKey struct{}
+
+type limiter struct {
+	mu   sync.Mutex
+	seen map[string]*rateWindow
+}
+
+type rateWindow struct {
+	start time.Time
+	read  int
+	write int
 }
 
 func main() {
@@ -74,14 +89,15 @@ func main() {
 	}
 
 	a := app{db: db}
+	lim := newLimiter()
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", a.health)
 	mux.HandleFunc("GET /health", a.health)
-	mux.HandleFunc("POST /v1/entries", a.createEntry)
-	mux.HandleFunc("GET /v1/entries", a.listEntries)
-	mux.HandleFunc("GET /v1/entries/count", a.countEntries)
+	mux.HandleFunc("POST /v1/entries", lim.wrap("write", a.createEntry))
+	mux.HandleFunc("GET /v1/entries", lim.wrap("read", a.listEntries))
+	mux.HandleFunc("GET /v1/entries/count", lim.wrap("read", a.countEntries))
 
-	server := &http.Server{Addr: ":" + port(), Handler: mux, ReadHeaderTimeout: 5 * time.Second}
+	server := &http.Server{Addr: ":" + port(), Handler: requestIDMiddleware(mux), ReadHeaderTimeout: 5 * time.Second}
 	log.Printf("listening on %s", server.Addr)
 	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Fatal(err)
@@ -102,7 +118,7 @@ func (a app) health(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
 	defer cancel()
 	if err := a.db.PingContext(ctx); err != nil {
-		writeAPIError(w, http.StatusServiceUnavailable, "UNAVAILABLE", "Service unavailable.", r.Header.Get("X-Request-Id"), nil)
+		writeAPIError(w, http.StatusServiceUnavailable, "UNAVAILABLE", "Service unavailable.", requestID(r), nil)
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
@@ -111,7 +127,7 @@ func (a app) health(w http.ResponseWriter, r *http.Request) {
 func (a app) createEntry(w http.ResponseWriter, r *http.Request) {
 	contentType := r.Header.Get("Content-Type")
 	if contentType != "application/json" && !strings.HasPrefix(contentType, "application/json;") {
-		writeAPIError(w, http.StatusBadRequest, "BAD_REQUEST", "Request must be JSON.", r.Header.Get("X-Request-Id"), nil)
+		writeAPIError(w, http.StatusBadRequest, "BAD_REQUEST", "Request must be JSON.", requestID(r), nil)
 		return
 	}
 
@@ -121,11 +137,11 @@ func (a app) createEntry(w http.ResponseWriter, r *http.Request) {
 
 	var in entryInput
 	if err := dec.Decode(&in); err != nil {
-		writeAPIError(w, http.StatusBadRequest, "BAD_REQUEST", "Request validation failed.", r.Header.Get("X-Request-Id"), nil)
+		writeAPIError(w, http.StatusBadRequest, "BAD_REQUEST", "Request validation failed.", requestID(r), nil)
 		return
 	}
 	if err := checkNoTrailingJSON(dec); err != nil {
-		writeAPIError(w, http.StatusBadRequest, "BAD_REQUEST", "Request validation failed.", r.Header.Get("X-Request-Id"), nil)
+		writeAPIError(w, http.StatusBadRequest, "BAD_REQUEST", "Request validation failed.", requestID(r), nil)
 		return
 	}
 
@@ -143,7 +159,7 @@ func (a app) createEntry(w http.ResponseWriter, r *http.Request) {
 		details = append(details, errorDetail{Field: "note", Code: "TOO_LONG", Message: "Note is too long."})
 	}
 	if len(details) > 0 {
-		writeAPIError(w, http.StatusUnprocessableEntity, "VALIDATION_FAILED", "Request validation failed.", r.Header.Get("X-Request-Id"), details)
+		writeAPIError(w, http.StatusUnprocessableEntity, "VALIDATION_FAILED", "Request validation failed.", requestID(r), details)
 		return
 	}
 
@@ -152,7 +168,7 @@ func (a app) createEntry(w http.ResponseWriter, r *http.Request) {
 
 	var e entry
 	if err := a.db.QueryRowContext(ctx, `INSERT INTO guestbook_entries (name, note) VALUES ($1, $2) RETURNING id::text, name, note, created_at`, name, note).Scan(&e.ID, &e.Name, &e.Note, &e.CreatedAt); err != nil {
-		writeAPIError(w, http.StatusServiceUnavailable, "UNAVAILABLE", "Service unavailable.", r.Header.Get("X-Request-Id"), nil)
+		writeAPIError(w, http.StatusServiceUnavailable, "UNAVAILABLE", "Service unavailable.", requestID(r), nil)
 		return
 	}
 	w.Header().Set("Location", "/v1/entries/"+e.ID)
@@ -165,7 +181,7 @@ func (a app) listEntries(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := a.db.QueryContext(ctx, `SELECT id::text, name, note, created_at FROM guestbook_entries ORDER BY created_at DESC, id DESC`)
 	if err != nil {
-		writeAPIError(w, http.StatusServiceUnavailable, "UNAVAILABLE", "Service unavailable.", r.Header.Get("X-Request-Id"), nil)
+		writeAPIError(w, http.StatusServiceUnavailable, "UNAVAILABLE", "Service unavailable.", requestID(r), nil)
 		return
 	}
 	defer rows.Close()
@@ -174,13 +190,13 @@ func (a app) listEntries(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var e entry
 		if err := rows.Scan(&e.ID, &e.Name, &e.Note, &e.CreatedAt); err != nil {
-			writeAPIError(w, http.StatusInternalServerError, "INTERNAL", "Unexpected error.", r.Header.Get("X-Request-Id"), nil)
+			writeAPIError(w, http.StatusInternalServerError, "INTERNAL", "Unexpected error.", requestID(r), nil)
 			return
 		}
 		data = append(data, e)
 	}
 	if err := rows.Err(); err != nil {
-		writeAPIError(w, http.StatusInternalServerError, "INTERNAL", "Unexpected error.", r.Header.Get("X-Request-Id"), nil)
+		writeAPIError(w, http.StatusInternalServerError, "INTERNAL", "Unexpected error.", requestID(r), nil)
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"data": data})
@@ -192,7 +208,7 @@ func (a app) countEntries(w http.ResponseWriter, r *http.Request) {
 
 	var count int64
 	if err := a.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM guestbook_entries`).Scan(&count); err != nil {
-		writeAPIError(w, http.StatusServiceUnavailable, "UNAVAILABLE", "Service unavailable.", r.Header.Get("X-Request-Id"), nil)
+		writeAPIError(w, http.StatusServiceUnavailable, "UNAVAILABLE", "Service unavailable.", requestID(r), nil)
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]int64{"count": count})
@@ -210,7 +226,74 @@ func checkNoTrailingJSON(dec *json.Decoder) error {
 }
 
 func writeAPIError(w http.ResponseWriter, status int, code, message, requestID string, details []errorDetail) {
+	if code == "RATE_LIMITED" {
+		w.Header().Set("Retry-After", "60")
+	}
 	writeJSON(w, status, apiError{Error: apiErrorBody{Code: code, Message: message, Details: details, RequestID: requestID}})
+}
+
+func requestID(r *http.Request) string {
+	if v := r.Header.Get("X-Request-Id"); v != "" {
+		return v
+	}
+	if v, _ := r.Context().Value(requestContextKey{}).(string); v != "" {
+		return v
+	}
+	return ""
+}
+
+func requestIDMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		id := r.Header.Get("X-Request-Id")
+		if id == "" {
+			id = fmt.Sprintf("req-%d", time.Now().UnixNano())
+		}
+		w.Header().Set("X-Request-Id", id)
+		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), requestContextKey{}, id)))
+	})
+}
+
+func newLimiter() *limiter { return &limiter{seen: make(map[string]*rateWindow)} }
+
+func (l *limiter) wrap(kind string, next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !l.allow(kind, clientIP(r)) {
+			writeAPIError(w, http.StatusTooManyRequests, "RATE_LIMITED", "Too many requests.", requestID(r), nil)
+			return
+		}
+		next(w, r)
+	}
+}
+
+func (l *limiter) allow(kind, ip string) bool {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	w := l.seen[ip]
+	now := time.Now()
+	if w == nil || now.Sub(w.start) >= time.Minute {
+		w = &rateWindow{start: now}
+		l.seen[ip] = w
+	}
+	if kind == "write" {
+		if w.write >= 10 {
+			return false
+		}
+		w.write++
+		return true
+	}
+	if w.read >= 60 {
+		return false
+	}
+	w.read++
+	return true
+}
+
+func clientIP(r *http.Request) string {
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return r.RemoteAddr
+	}
+	return host
 }
 
 func migrate(ctx context.Context, db *sql.DB) error {
@@ -265,3 +348,4 @@ func writeJSON(w http.ResponseWriter, status int, body any) {
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(body)
 }
+
