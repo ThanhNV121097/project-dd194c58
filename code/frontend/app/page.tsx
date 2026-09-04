@@ -1,5 +1,9 @@
-import GuestBookPage from '../components/GuestBook';
+import GuestBookPage from '../components/GuestBookPage';
 
 export default function Home() {
-  return <GuestBookPage />;
+  return (
+    <main className="page-shell">
+      <GuestBookPage />
+    </main>
+  );
 }
