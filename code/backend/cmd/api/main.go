@@ -73,18 +73,14 @@ func port() string {
 	return "8080"
 }
 
-func (a app) healthz(w http.ResponseWriter, r *http.Request) {
+func (a app) health(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
 	defer cancel()
 	if err := a.db.PingContext(ctx); err != nil {
-		http.Error(w, "database unavailable", http.StatusServiceUnavailable)
+		writeAPIError(w, http.StatusServiceUnavailable, "UNAVAILABLE", "Service unavailable.", nil, requestID(r.Context()))
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
-}
-
-func (a app) health(w http.ResponseWriter, r *http.Request) {
-	a.healthz(w, r)
 }
 
 func migrate(ctx context.Context, db *sql.DB) error {
