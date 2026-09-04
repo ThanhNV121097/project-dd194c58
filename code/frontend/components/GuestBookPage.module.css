@@ -137,7 +137,7 @@
 }
 
 .field textarea {
-  min-height: 31 * var(--space-4);
+  min-height: calc(var(--space-4) * 31);
   resize: vertical;
 }
 
