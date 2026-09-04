@@ -1,7 +1,6 @@
+import GuestBookPage from "../components/GuestBookPage";
+import { guestBookPageData } from "../lib/mock/build-guest-book-page";
+
 export default function Home() {
-  return (
-    <main className="page-shell">
-      {/* Story components mount here. */}
-    </main>
-  );
+  return <GuestBookPage data={guestBookPageData} />;
 }
