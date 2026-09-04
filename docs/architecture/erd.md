@@ -97,7 +97,15 @@ No table expected to exceed 10M rows within a year for stated shop guest book sc
 
 Implementation note: this ERD chooses `bigint` identity instead of UUID because SRS explicitly requires integer `id`, IDs are internal API payload fields, and smaller btree indexes are enough for append-only entries.
 
-## 9. Open questions
+## 9. Story extension — Build guest book page
+
+The reviewed UI mock module `code/frontend/lib/mock/build-guest-book-page.ts` uses this entry shape: `id`, `name`, `note`, `created_at`, plus page-level `count`, `apiUnavailableMessage`, and optional `showApiUnavailable`. Existing `guestbook_entries` columns supply every persisted entry field the page needs. `count` is derived with `COUNT(*)`; failure-message fields are frontend state, not database state.
+
+No new entity, column, foreign key, constraint, or index is required for this story. The existing `idx_guestbook_entries_created_at_id` index remains the serving index for newest-first cards.
+
+**Migration plan** — forward: no schema migration for this story beyond existing initial schema. Backward: no rollback action. Safe on populated table: yes, because this story adds no database change.
+
+## 10. Open questions
 
 None.
 
