@@ -1,7 +1,5 @@
+import GuestBookPage from '../components/GuestBook';
+
 export default function Home() {
-  return (
-    <main className="page-shell">
-      {/* Story components mount here. */}
-    </main>
-  );
+  return <GuestBookPage />;
 }
