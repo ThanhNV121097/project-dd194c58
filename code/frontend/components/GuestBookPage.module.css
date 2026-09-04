@@ -142,6 +142,6 @@ textarea:focus-visible {
 .feed { display: grid; gap: var(--space-4); margin-top: var(--space-4); }
 .card { padding: var(--space-5); border: var(--border-width) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-raised); box-shadow: var(--shadow-sm); animation: fade-in var(--duration-base) var(--easing); }
 .cardTop { justify-content: space-between; align-items: baseline; margin-bottom: var(--space-2); }
-.notice { margin-top: var(--space-5); padding: var(--space-4) var(--space-5); border: var(--border-width) solid var(--color-border); border-radius: var(--radius-lg); background: #FFFAF0; color: #6A5220; }
+.notice { margin-top: var(--space-5); padding: var(--space-4) var(--space-5); border: var(--border-width) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); color: var(--color-primary); }
 .stack { display: grid; gap: var(--space-5); }
 .mini { flex: 1 1 calc(var(--space-16) * 2 + var(--space-2)); padding: var(--space-5); }
