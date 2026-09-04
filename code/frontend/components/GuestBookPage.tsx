@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { createEntry, fetchEntryCount, fetchEntries } from "../lib/guestbook-api";
 import styles from "./GuestBookPage.module.css";
 
@@ -40,17 +40,24 @@ export default function GuestBookPage({}: GuestBookPageProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [apiUnavailable, setApiUnavailable] = useState(false);
 
-  useState(() => {
+  useEffect(() => {
+    let cancelled = false;
+
     void Promise.all([fetchEntries(), fetchEntryCount()])
       .then(([loadedEntries, loadedCount]) => {
+        if (cancelled) return;
         setEntries(sortNewestFirst(loadedEntries));
         setCount(loadedCount);
         setApiUnavailable(false);
       })
       .catch(() => {
-        setApiUnavailable(true);
+        if (!cancelled) setApiUnavailable(true);
       });
-  });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const newestEntries = useMemo(() => sortNewestFirst(entries), [entries]);
 
