@@ -44,8 +44,8 @@
 }
 .nav { display: flex; gap: var(--space-5); }
 .nav a { padding: var(--space-3) var(--space-4); border-radius: var(--radius-full); }
-.nav a:hover,
-.nav a:focus-visible,
+.navLink:hover,
+.navLink:focus-visible,
 .brand:focus-visible,
 button:hover,
 button:focus-visible,
