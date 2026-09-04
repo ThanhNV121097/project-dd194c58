@@ -11,7 +11,7 @@
   padding: var(--space-3) 0 var(--space-6);
 }
 .brand,
-.nav a {
+.navLink {
   color: var(--color-primary);
   text-decoration: none;
 }
