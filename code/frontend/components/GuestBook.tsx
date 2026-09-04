@@ -29,7 +29,7 @@ export default function GuestBookPage() {
   }
 
   function submitForm(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+    resetMessage();
     const name = form.name.trim();
     const note = form.note.trim();
 
