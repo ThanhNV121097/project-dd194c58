@@ -43,7 +43,7 @@
   text-transform: uppercase;
 }
 .nav { display: flex; gap: var(--space-5); }
-.nav a { padding: var(--space-3) var(--space-4); border-radius: var(--radius-full); }
+.navLink { padding: var(--space-3) var(--space-4); border-radius: var(--radius-full); }
 .navLink:hover,
 .navLink:focus-visible,
 .brand:focus-visible,
