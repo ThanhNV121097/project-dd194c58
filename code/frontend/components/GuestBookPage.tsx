@@ -1,16 +1,16 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import styles from "./GuestBookPage.module.css";
 
-type Entry = {
+export type Entry = {
   readonly id: string;
   readonly name: string;
   readonly note: string;
   readonly created_at: string;
 };
 
-type GuestBookPageData = {
+export type GuestBookPageData = {
   readonly count: number;
   readonly entries: readonly Entry[];
   readonly apiUnavailableMessage: string;
@@ -28,7 +28,6 @@ const DATE_FORMAT: Intl.DateTimeFormatOptions = {
   minute: "2-digit",
 };
 
-const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "/api";
 const apiUnavailableMessage = "Could not reach guest book API. Try again in a moment.";
 
 function formatEntryDate(value: string) {
@@ -45,33 +44,6 @@ export default function GuestBookPage({ data }: GuestBookPageProps) {
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
   const [message, setMessage] = useState<string | null>(null);
-  const [apiUnavailable, setApiUnavailable] = useState(Boolean(data.showApiUnavailable));
-  const [loading, setLoading] = useState(!data.entries.length && data.count === 0 && !data.showApiUnavailable);
-
-  async function loadData() {
-    try {
-      const [entriesResponse, countResponse] = await Promise.all([
-        fetch(`${apiBase}/v1/entries`, { cache: "no-store" }),
-        fetch(`${apiBase}/v1/entries/count`, { cache: "no-store" }),
-      ]);
-      if (!entriesResponse.ok || !countResponse.ok) {
-        throw new Error("api unavailable");
-      }
-      const entriesBody = (await entriesResponse.json()) as { data: Entry[] };
-      const countBody = (await countResponse.json()) as { count: number };
-      setEntries(sortNewestFirst(entriesBody.data));
-      setCount(countBody.count);
-      setApiUnavailable(false);
-    } catch {
-      setApiUnavailable(true);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    void loadData();
-  }, []);
 
   const newestEntries = useMemo(() => sortNewestFirst(entries), [entries]);
 
@@ -83,34 +55,27 @@ export default function GuestBookPage({ data }: GuestBookPageProps) {
       setMessage("Enter name and note to sign book.");
       return;
     }
-    try {
-      const response = await fetch(`${apiBase}/v1/entries`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: trimmedName, note: trimmedNote }),
-      });
-      if (!response.ok) {
-        throw new Error("api unavailable");
-      }
-      const saved = (await response.json()) as Entry;
-      setEntries((current) => sortNewestFirst([saved, ...current]));
-      setCount((current) => current + 1);
-      setName("");
-      setNote("");
-      setMessage("Thanks. Entry appears at top of list with no reload.");
-      setApiUnavailable(false);
-    } catch {
-      setApiUnavailable(true);
-      setMessage(apiUnavailableMessage);
-    }
+
+    const saved = {
+      id: String(Date.now()),
+      name: trimmedName,
+      note: trimmedNote,
+      created_at: new Date().toISOString(),
+    };
+
+    setEntries((current) => sortNewestFirst([saved, ...current]));
+    setCount((current) => current + 1);
+    setName("");
+    setNote("");
+    setMessage("Thanks. Entry appears at top of list with no reload.");
   }
 
-  if (apiUnavailable) {
+  if (data.showApiUnavailable) {
     return (
       <main className={styles.page}>
         <section className={styles.notice} role="alert">
           <h1 className={styles.title}>Guest Book</h1>
-          <p className={styles.noticeMessage}>{message ?? apiUnavailableMessage}</p>
+          <p className={styles.noticeMessage}>{data.apiUnavailableMessage ?? apiUnavailableMessage}</p>
         </section>
       </main>
     );
@@ -133,7 +98,7 @@ export default function GuestBookPage({ data }: GuestBookPageProps) {
             <h2 className={styles.sectionTitle}>Sign the book</h2>
             <div className={styles.field}><label htmlFor="name">Name</label><input id="name" name="name" maxLength={60} value={name} onChange={(event) => setName(event.target.value)} placeholder="Ada Lovelace" /><p className={styles.help}>1–60 characters after trimming.</p></div>
             <div className={styles.field}><label htmlFor="note">Note</label><textarea id="note" name="note" maxLength={280} value={note} onChange={(event) => setNote(event.target.value)} placeholder="Loved the tea and the calm corner by the window." /><p className={styles.help}>1–280 characters after trimming.</p></div>
-            <button className={styles.primary} type="submit" disabled={loading}>Leave note</button>
+            <button className={styles.primary} type="submit">Leave note</button>
             {message ? <p className={styles.banner} role="status">{message}</p> : null}
           </form>
           <section className={styles.entries} aria-labelledby="entries-title">
