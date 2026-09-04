@@ -27,7 +27,7 @@
 .brandMark {
   width: calc(var(--space-11) - var(--space-1));
   height: calc(var(--space-11) - var(--space-1));
-  border-radius: calc(var(--radius-lg) - var(--radius-xs));
+  border-radius: var(--radius-lg);
   background: var(--color-primary);
   box-shadow: var(--shadow-md);
   display: grid;
