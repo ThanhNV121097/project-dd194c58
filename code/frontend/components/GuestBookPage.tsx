@@ -14,6 +14,7 @@ type GuestBookPageData = {
   readonly count: number;
   readonly entries: readonly Entry[];
   readonly apiUnavailableMessage: string;
+  readonly showApiUnavailable?: boolean;
 };
 
 type GuestBookPageProps = {
@@ -37,9 +38,12 @@ export default function GuestBookPage({ data }: GuestBookPageProps) {
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
   const [message, setMessage] = useState<string | null>(null);
-  const [apiUnavailable, setApiUnavailable] = useState(false);
+  const [apiUnavailable, setApiUnavailable] = useState(Boolean(data.showApiUnavailable));
 
-  const newestEntries = useMemo(() => [...entries].sort((a, b) => b.id - a.id), [entries]);
+  const newestEntries = useMemo(
+    () => [...entries].sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)),
+    [entries],
+  );
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
