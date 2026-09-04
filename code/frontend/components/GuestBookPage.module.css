@@ -20,13 +20,13 @@
   gap: 12px;
 }
 
-.navLink:hover,
-.navLink:focus-visible,
-.input:focus-visible,
-.textarea:focus-visible {
-  outline: 1px solid var(--color-primary);
-  outline-offset: 2px;
-}
+.nav a:hover,
+.nav a:focus-visible,
+.brand:focus-visible,
+.wrap button:hover,
+.wrap button:focus-visible,
+.wrap input:focus-visible,
+.wrap textarea:focus-visible { outline: var(--border-width) solid var(--color-primary); outline-offset: var(--space-1); }
 
 .form {
   display: grid;
