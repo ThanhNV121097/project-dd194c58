@@ -38,3 +38,5 @@ export const mockGuestBook = {
     } satisfies GuestBookEntry;
   },
 };
+
+export const guestBookMock = mockGuestBook;
