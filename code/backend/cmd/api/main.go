@@ -47,6 +47,9 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", a.healthz)
 	mux.HandleFunc("GET /health", a.health)
+	mux.HandleFunc("GET /v1/entries", a.listEntries)
+	mux.HandleFunc("GET /v1/entries/count", a.countEntries)
+	mux.HandleFunc("POST /v1/entries", a.createEntry)
 
 	server := &http.Server{
 		Addr:              ":" + port(),
@@ -73,15 +76,13 @@ func (a app) healthz(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
 	defer cancel()
 	if err := a.db.PingContext(ctx); err != nil {
-		http.Error(w, "database unavailable", http.StatusServiceUnavailable)
+		writeAPIError(w, r, http.StatusServiceUnavailable, "UNAVAILABLE", "Service unavailable.", nil)
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 }
 
-func (a app) health(w http.ResponseWriter, r *http.Request) {
-	a.healthz(w, r)
-}
+func (a app) health(w http.ResponseWriter, r *http.Request) { a.healthz(w, r) }
 
 func migrate(ctx context.Context, db *sql.DB) error {
 	if _, err := db.ExecContext(ctx, `CREATE TABLE IF NOT EXISTS schema_migrations (version text PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now())`); err != nil {
@@ -131,7 +132,7 @@ func applyMigration(ctx context.Context, db *sql.DB, version string, sqlText str
 }
 
 func writeJSON(w http.ResponseWriter, status int, body any) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(status)
 	if err := json.NewEncoder(w).Encode(body); err != nil {
 		log.Printf("write response: %v", err)
