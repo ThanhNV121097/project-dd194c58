@@ -49,7 +49,6 @@
 
 .title {
   margin-top: var(--space-4);
-  max-width: 10ch;
   color: var(--color-primary);
   font-size: var(--text-3xl);
 }
