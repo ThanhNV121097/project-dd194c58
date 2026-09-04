@@ -164,6 +164,7 @@ export default function GuestBookPage() {
           <label className={styles.field}>
             <span>Note</span>
             <textarea
+              className={styles.textArea}
               value={note}
               onChange={(event) => setNote(event.target.value)}
               name="note"
