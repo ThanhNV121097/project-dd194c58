@@ -7,6 +7,8 @@ import styles from './GuestBook.module.css';
 
 type Entry = (typeof guestBookMock.entries)[number];
 
+const emptyForm = { name: '', note: '' };
+
 function formatDate(value: string) {
   return new Date(value).toLocaleString('en-US', {
     month: 'short',
