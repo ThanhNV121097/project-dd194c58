@@ -1,0 +1,255 @@
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+.shell {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: var(--space-12) var(--space-5) var(--space-16);
+}
+
+.header,
+.grid,
+.hero,
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.header {
+  padding-bottom: var(--space-6);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.brandMark {
+  width: var(--space-11);
+  height: var(--space-11);
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  box-shadow: var(--shadow-md);
+}
+
+.eyebrow {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-normal);
+}
+
+.brandName,
+.sectionTitle,
+.title,
+.name {
+  font-family: var(--font-heading);
+}
+
+.brandName,
+.sectionTitle,
+.title {
+  color: var(--color-primary);
+  line-height: var(--leading-heading);
+}
+
+.brandName {
+  display: block;
+  font-size: var(--text-base);
+}
+
+.title {
+  font-size: var(--text-3xl);
+}
+
+.sectionTitle {
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-3);
+}
+
+.lead,
+.subtle,
+.help,
+.countLabel,
+.card time,
+.note {
+  color: var(--color-text-muted);
+}
+
+.lead {
+  max-width: 100%;
+  font-size: var(--text-lg);
+  line-height: var(--leading-lg);
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.stat,
+.form,
+.listWrap,
+.card,
+.notice,
+.paper,
+.previewNote {
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  box-shadow: var(--shadow-md);
+}
+
+.stat {
+  border-radius: var(--radius-full);
+  padding: var(--space-3) var(--space-4);
+}
+
+.stat strong {
+  display: block;
+  color: var(--color-primary);
+  font-size: var(--text-xl);
+}
+
+.paper {
+  min-height: var(--space-16);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);
+}
+
+.previewNote {
+  display: inline-block;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  color: var(--color-warning);
+}
+
+.form,
+.listWrap,
+.card {
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+}
+
+.field {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.field span,
+.name {
+  color: var(--color-text);
+}
+
+.field input,
+.field textarea,
+.button {
+  font: inherit;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.field textarea {
+  min-height: var(--space-16);
+  resize: vertical;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  margin-top: var(--space-4);
+}
+
+.button {
+  border: 0;
+  border-radius: var(--radius-full);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  box-shadow: var(--shadow-sm);
+}
+
+.badge {
+  font-size: var(--text-sm);
+}
+
+.notice {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-sm);
+  color: var(--color-warning);
+}
+
+.feed {
+  gap: var(--space-3);
+}
+
+.entry {
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  animation: fade-in var(--duration-base) var(--easing);
+}
+
+.entryTop {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.name {
+  font-size: var(--text-xl);
+}
+
+.date {
+  font-size: var(--text-sm);
+}
+
+.note {
+  margin-top: var(--space-2);
+  line-height: var(--leading-base);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (min-width: 860px) {
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+    align-items: start;
+    gap: var(--space-6);
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    align-items: center;
+  }
+}
