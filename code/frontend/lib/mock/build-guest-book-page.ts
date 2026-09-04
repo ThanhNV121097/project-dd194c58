@@ -1,6 +1,7 @@
 export const guestBookPageData = {
   count: 3,
   apiUnavailableMessage: "Could not reach API. Try again in a moment.",
+  showApiUnavailable: false,
   entries: [
     {
       id: 3,
@@ -22,3 +23,4 @@ export const guestBookPageData = {
     },
   ],
 } as const;
+
