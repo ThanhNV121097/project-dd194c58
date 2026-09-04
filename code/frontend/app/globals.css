@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #F7F3EA;
+  --color-surface: #FFFDF8;
+  --color-surface-raised: #FFFDF8;
+  --color-border: #E7DDCF;
+  --color-text: #1F2933;
+  --color-text-muted: #6B7280;
+  --color-primary: #24533D;
+  --color-primary-text: #FFFFFF;
+  --color-warning: #C9B38C;
+  --color-focus: rgba(36,83,61,.22);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 18px;
+  --space-6: 24px;
+  --space-7: 26px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-11: 44px;
+  --space-12: 48px;
+  --space-14: 56px;
+  --space-16: 64px;
+  --text-xs: 0.82rem;
+  --text-sm: 0.92rem;
+  --text-base: 1rem;
+  --text-lg: 1.06rem;
+  --text-xl: 1.08rem;
+  --text-2xl: 1.7rem;
+  --text-3xl: clamp(2.5rem,6vw,4.8rem);
+  --leading-xs: 1.2;
+  --leading-sm: 1.4;
+  --leading-base: 1.65;
+  --leading-lg: 1.7;
+  --leading-heading: 1.1;
+  --font-body: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-heading: Georgia, "Times New Roman", serif;
+  --font-weight-body: 400;
+  --font-weight-medium: 600;
+  --font-weight-heading: 700;
+  --tracking-tight: normal;
+  --tracking-normal: normal;
+  --radius-sm: 14px;
+  --radius-md: 18px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+  --border-width: 1px;
+  --shadow-sm: 0 10px 20px rgba(36,83,61,.2);
+  --shadow-md: 0 10px 30px rgba(31,41,51,.08);
+  --shadow-lg: none;
+  --duration-fast: .2s;
+  --duration-base: .45s;
+  --easing: ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--color-bg);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-body);
+  line-height: var(--leading-base);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  font-weight: var(--font-weight-heading);
+  letter-spacing: var(--tracking-normal);
+  line-height: var(--leading-heading);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: var(--border-width) solid var(--color-primary);
+  outline-offset: var(--space-1);
+  box-shadow: 0 0 0 var(--space-1) var(--color-focus);
+}
+
+.page-shell {
+  width: min(100%, 860px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: var(--space-12) var(--space-5);
+}
+
+.fade-in {
+  animation: fade-in var(--duration-base) var(--easing);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms;
+    animation-iteration-count: 1;
+    scroll-behavior: auto;
+    transition-duration: 1ms;
+  }
+}
