@@ -76,7 +76,6 @@ var limiter rateLimiter
 
 func (a app) routes() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /healthz", a.healthz)
 	mux.HandleFunc("GET /health", a.health)
 	mux.HandleFunc("POST /v1/entries", a.createEntry)
 	mux.HandleFunc("GET /v1/entries", a.listEntries)
