@@ -45,6 +45,7 @@ Behaviour:
 1. Visitor opens page and sees centered one-column layout with a sign form, a visible count, and an entry list.
 2. Visitor sees heading, name field, note field, submit button, count, and entry cards as shown in approved design.
 3. Page shows content for public reading without sign-in or moderation controls.
+4. Page does not show the mock-only "Simulate API issue" control in shipped product.
 
 **Acceptance criteria** — each maps one-to-one onto a test case in `docs/guestbook/test-cases/build-guest-book-page.md`.
 
@@ -52,7 +53,7 @@ Behaviour:
 |---|---|---|---|
 | AC-1 | page loads | visitor views page | sign form, count, and entry list are visible |
 | AC-2 | page loads | visitor views entry list | entries appear newest first |
-| AC-3 | page loads | visitor views page | no login, account, moderation, or payment control is shown |
+| AC-3 | page loads | visitor views page | no login, account, moderation, payment, or API-issue control is shown |
 
 **Failure, boundary and permission behaviour**
 
@@ -60,6 +61,7 @@ Behaviour:
 |---|---|---|
 | Not applicable | No roles beyond public visitor | No permission gate; page is public |
 | Not applicable | No empty-state variant is shown in approved design | Page uses default screen only |
+| Not applicable | Mock-only "Simulate API issue" control was shown in design but stakeholder excluded it from shipping scope | Control is omitted from shipped product |
 | API unavailable | Backend cannot be reached | Friendly message is shown instead of a broken page |
 
 **Data touched**
