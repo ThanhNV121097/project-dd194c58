@@ -203,6 +203,11 @@
   background: var(--color-surface);
 }
 
+.noticeTitle {
+  margin-bottom: var(--space-2);
+  color: var(--color-primary);
+}
+
 .noticeMessage {
   margin: 0;
   color: var(--color-text);
