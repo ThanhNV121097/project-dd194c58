@@ -147,8 +147,8 @@
   padding: var(--space-4) var(--space-4);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-md);
-  background: #FFFAF0;
-  color: #6A5220;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
 .feed {
@@ -192,12 +192,12 @@
   width: min(100%, calc(var(--space-16) * 8 + var(--space-16)));
   margin: 0 auto;
   padding: var(--space-6);
-  background: #FFFAF0;
+  background: var(--color-surface);
 }
 
 .noticeMessage {
   margin: 0;
-  color: #6A5220;
+  color: var(--color-text);
   font-size: var(--text-sm);
 }
 
