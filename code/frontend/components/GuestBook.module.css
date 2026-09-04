@@ -129,7 +129,7 @@ h2,
   padding: var(--space-4);
   border-radius: var(--radius-md);
   background: var(--color-surface);
-  color: #6A5220;
+  color: var(--color-warning);
 }
 
 .card,
