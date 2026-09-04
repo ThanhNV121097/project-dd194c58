@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
+import { createEntry, fetchEntryCount, fetchEntries } from "../lib/guestbook-api";
 import styles from "./GuestBookPage.module.css";
 
 export type Entry = {
@@ -10,15 +11,8 @@ export type Entry = {
   readonly created_at: string;
 };
 
-export type GuestBookPageData = {
-  readonly count: number;
-  readonly entries: readonly Entry[];
-  readonly apiUnavailableMessage: string;
-  readonly showApiUnavailable?: boolean;
-};
-
 type GuestBookPageProps = {
-  data: GuestBookPageData;
+  data?: never;
 };
 
 const DATE_FORMAT: Intl.DateTimeFormatOptions = {
@@ -38,17 +32,31 @@ function sortNewestFirst(entries: readonly Entry[]) {
   return [...entries].sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at));
 }
 
-export default function GuestBookPage({ data }: GuestBookPageProps) {
-  const [entries, setEntries] = useState(sortNewestFirst(data.entries));
-  const [count, setCount] = useState(data.count);
+export default function GuestBookPage({}: GuestBookPageProps) {
+  const [entries, setEntries] = useState<Entry[]>([]);
+  const [count, setCount] = useState(0);
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
   const [message, setMessage] = useState<string | null>(null);
+  const [apiUnavailable, setApiUnavailable] = useState(false);
+
+  useState(() => {
+    void Promise.all([fetchEntries(), fetchEntryCount()])
+      .then(([loadedEntries, loadedCount]) => {
+        setEntries(sortNewestFirst(loadedEntries));
+        setCount(loadedCount);
+        setApiUnavailable(false);
+      })
+      .catch(() => {
+        setApiUnavailable(true);
+      });
+  });
 
   const newestEntries = useMemo(() => sortNewestFirst(entries), [entries]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
     const trimmedName = name.trim();
     const trimmedNote = note.trim();
     if (!trimmedName || !trimmedNote) {
@@ -56,26 +64,25 @@ export default function GuestBookPage({ data }: GuestBookPageProps) {
       return;
     }
 
-    const saved = {
-      id: String(Date.now()),
-      name: trimmedName,
-      note: trimmedNote,
-      created_at: new Date().toISOString(),
-    };
-
-    setEntries((current) => sortNewestFirst([saved, ...current]));
-    setCount((current) => current + 1);
-    setName("");
-    setNote("");
-    setMessage("Thanks. Entry appears at top of list with no reload.");
+    try {
+      const saved = await createEntry({ name: trimmedName, note: trimmedNote });
+      setEntries((current) => sortNewestFirst([saved, ...current]));
+      setCount((current) => current + 1);
+      setName("");
+      setNote("");
+      setMessage("Thanks. Entry appears at top of list with no reload.");
+      setApiUnavailable(false);
+    } catch {
+      setApiUnavailable(true);
+    }
   }
 
-  if (data.showApiUnavailable) {
+  if (apiUnavailable) {
     return (
       <main className={styles.page}>
         <section className={styles.notice} role="alert">
           <h1 className={styles.noticeTitle}>Guest Book</h1>
-          <p className={styles.noticeMessage}>{data.apiUnavailableMessage ?? apiUnavailableMessage}</p>
+          <p className={styles.noticeMessage}>{apiUnavailableMessage}</p>
         </section>
       </main>
     );
