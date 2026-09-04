@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from 'react';
+import type { FormEvent } from 'react';
+import { useState } from 'react';
 import { guestBookMock } from '@/lib/mock/build-guest-book-api';
 import styles from './GuestBook.module.css';
 
@@ -15,9 +16,9 @@ export default function GuestBookPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const newestLabel = useMemo(() => (count === 1 ? 'Visitor so far' : 'Visitors so far'), [count]);
+  const newestLabel = count === 1 ? 'Visitor so far' : 'Visitors so far';
 
-  function submitForm(event: React.FormEvent<HTMLFormElement>) {
+  function submitForm(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const name = form.name.trim();
     const note = form.note.trim();
