@@ -1,6 +1,4 @@
-import type { GuestBookPageData } from "../../components/GuestBookPage";
-
-export const guestBookPageData: GuestBookPageData = {
+export const guestBookPageData = {
   count: 3,
   entries: [
     {
@@ -24,4 +22,4 @@ export const guestBookPageData: GuestBookPageData = {
   ],
   apiUnavailableMessage: "Could not reach guest book API. Try again in a moment.",
   showApiUnavailable: false,
-};
+} as const;
