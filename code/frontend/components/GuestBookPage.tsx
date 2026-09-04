@@ -151,6 +151,7 @@ export default function GuestBookPage() {
           <label className={styles.field}>
             <span>Name</span>
             <input
+              className={styles.textInput}
               value={name}
               onChange={(event) => setName(event.target.value)}
               name="name"
