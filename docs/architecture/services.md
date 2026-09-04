@@ -348,7 +348,52 @@ No third-party integrations or provider setup in current scope.
 | `GET /v1/entries` | GUESTBOOK-001, GUESTBOOK-002, GUESTBOOK-003 |
 | `GET /v1/entries/count` | GUESTBOOK-001, GUESTBOOK-002, GUESTBOOK-003 |
 
-## 10. Open questions
+## 10. Story extension — Build guest book page
+
+Reviewed UI mock contract from `code/frontend/lib/mock/build-guest-book-page.ts`:
+
+```ts
+type Entry = {
+  readonly id: number;
+  readonly name: string;
+  readonly note: string;
+  readonly created_at: string;
+};
+
+type GuestBookPageData = {
+  readonly count: number;
+  readonly entries: readonly Entry[];
+  readonly apiUnavailableMessage: string;
+  readonly showApiUnavailable?: boolean;
+};
+```
+
+### 10.1 Contract alignment
+
+- `GET /v1/entries` supplies `entries` through response `data[]` with `id`, `name`, `note`, `created_at`, newest first.
+- `GET /v1/entries/count` supplies `count`.
+- `POST /v1/entries` returns saved entry so live page can prepend it or refresh `GET /v1/entries` and `GET /v1/entries/count`.
+- `apiUnavailableMessage` and `showApiUnavailable` are frontend presentation state. They are not backend response fields.
+
+One mismatch exists: service contract uses string IDs on the wire, while reviewed page mock uses numeric IDs. Keep string IDs because project cross-cutting contract already says IDs are strings on the wire, and `api.contract.prefix` memory confirms current API contract. Frontend API wiring must convert or type against string IDs when replacing mock data.
+
+### 10.2 Endpoints used by this story
+
+No new endpoint is needed. Existing contracts in sections 3.2, 3.3, and 3.4 cover this page:
+
+| Page need | Endpoint | Auth | Success | Errors |
+|---|---|---|---|---|
+| Load entry cards newest first | `GET /v1/entries` | public | `200 { "data": Entry[] }` | `RATE_LIMITED`, `INTERNAL`, `UNAVAILABLE` |
+| Load visible visitor count | `GET /v1/entries/count` | public | `200 { "count": number }` | `RATE_LIMITED`, `INTERNAL`, `UNAVAILABLE` |
+| Sign book from form | `POST /v1/entries` | public | `201 Entry` | `BAD_REQUEST`, `VALIDATION_FAILED`, `RATE_LIMITED`, `INTERNAL`, `UNAVAILABLE` |
+
+Existing error contract in section 2.3 remains authoritative. API-unavailable UI must show friendly copy when network failure or `UNAVAILABLE`/retryable error prevents load or submit. Validation details stay in existing `VALIDATION_FAILED` format.
+
+### 10.3 Migration plan
+
+Forward: no service endpoint migration for this story; backend API story implements existing endpoints. Backward: no rollback action. Safe on populated table: yes, no data or schema changes.
+
+## 11. Open questions
 
 None.
 
